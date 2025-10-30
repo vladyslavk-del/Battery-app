@@ -46,7 +46,15 @@
         }
         
         .safe-padding-bottom {
-            padding-bottom: var(--safe-area-inset-bottom);
+            /* Добавляем небольшой отступ (p-3) + отступ для safe-area */
+            padding-bottom: calc(var(--safe-area-inset-bottom) + 0.75rem); 
+        }
+        
+        /* Для кнопок навигации, чтобы они не были слишком близко к низу 
+           (p-3 уже есть, safe-padding-bottom добавит еще) 
+        */
+        .nav-button-padding {
+             padding-top: 0.75rem; /* p-3 */
         }
 
 
@@ -245,7 +253,7 @@
     <!-- 
       safe-padding-top: Добавляет отступ сверху, равный safe-area-inset-top 
     -->
-    <div class="w-full bg-white text-gray-800 text-sm flex items-center justify-between p-2 relative z-10 shadow-sm flex-shrink-0 safe-padding-top">
+    <div class="w-full bg-white text-gray-800 text-sm flex items-center justify-between p-2 pl-4 pr-4 relative z-10 shadow-sm flex-shrink-0 safe-padding-top">
         <div class="flex items-center space-x-2">
             <span class="font-bold text-xs">14:37</span>
             <span class="w-2 h-2 rounded-full bg-green-500"></span>
@@ -491,10 +499,10 @@
     <!-- 
       safe-padding-bottom: Добавляет отступ снизу, равный safe-area-inset-bottom 
     -->
-    <div class="w-full bg-white text-gray-600 flex justify-around items-center p-3 border-t border-gray-200 shadow-lg relative z-10 flex-shrink-0 safe-padding-bottom">
+    <div class="w-full bg-white text-gray-600 flex justify-around items-center border-t border-gray-200 shadow-lg relative z-10 flex-shrink-0 safe-padding-bottom">
         
         <!-- Home Button -->
-        <div id="navHomeButton" class="flex flex-col items-center cursor-pointer">
+        <div id="navHomeButton" class="flex flex-col items-center cursor-pointer nav-button-padding">
             <svg id="navHomeIcon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
                 <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2.586l.293.293A1 1 0 0010 16.586v-3.828l.293.293a1 1 0 001.414-1.414L10 9.414l-1.707-1.707a1 1 0 00-1.414 0L5 9.414V6.586a1 1 0 00-1.707-.707l-2-2a1 1 0 000-1.414l-1-1a1 1 0 00-1.414 1.414L2.586 7H1v12a1 1 0 001 1h16a1 1 0 001-1V4a1 1 0 00-1-1H11.707z" />
             </svg>
@@ -502,7 +510,7 @@
         </div>
 
         <!-- Tools Button -->
-        <div id="navToolsButton" class="flex flex-col items-center cursor-pointer">
+        <div id="navToolsButton" class="flex flex-col items-center cursor-pointer nav-button-padding">
             <svg id="navToolsIcon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" viewBox="0 0 20 20" fill="currentColor">
                 <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4zm4 4V6h2v2H9zm0 4v-2h2v2H9zm0 4v-2h2v2H9z" />
             </svg>
