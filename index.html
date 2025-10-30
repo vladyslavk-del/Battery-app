@@ -2,28 +2,32 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
     
-    <!-- --- Web App Tags --- --><meta name="apple-mobile-web-app-capable" content="yes">
+    <!-- --- Web App Meta Tags --- -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#E0F2FE">
     <title>Battery App (Layout)</title>
-    <!-- Tailwind CSS --><script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
         
-        html {
-            height: 100%;
+        html, body {
+            height: 100%; /* Ensure full height */
         }
         body { 
             font-family: 'Roboto', sans-serif;
+            overflow: hidden; /* Prevent scrolling on the body */
             touch-action: none; 
             -webkit-user-select: none; 
             -ms-user-select: none; 
             user-select: none; 
         }
 
-        /* --- Styles for HOME battery --- */
+        /* --- Styles for Home Page Battery --- */
         .app-battery-icon {
             width: 80px;
             height: 40px;
@@ -34,7 +38,6 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            overflow: hidden;
         }
         .app-battery-icon::after {
             content: '';
@@ -51,53 +54,23 @@
             top: 2px;
             left: 2px;
             height: calc(100% - 4px);
-            background-color: #EF4444; /* Red, as 10% */
+            background-color: #EF4444; /* Red for 10% */
             border-radius: 6px;
             width: 10%; /* 10% */
         }
         
-        /* --- Styles for STATUS BAR battery --- */
-        .status-bar-battery {
-            width: 24px;
-            height: 12px;
-            border: 1px solid currentColor;
-            border-radius: 3px;
-            position: relative;
-            margin-right: 2px;
-        }
-        .status-bar-battery::after {
-            content: '';
-            position: absolute;
-            top: 2px;
-            right: -3px;
-            width: 2px;
-            height: 6px;
-            background: currentColor;
-            border-radius: 1px;
-        }
-        .status-bar-battery-fill {
-            position: absolute;
-            top: 1px;
-            left: 1px;
-            height: calc(100% - 2px);
-            border-radius: 2px;
-            width: 10%; /* Initial level */
-            transition: width 0.1s linear, background-color 0.3s ease, height 0.1s linear;
-        }
-        
-        
-        /* --- Styles for SHAKE battery --- */
+        /* --- Styles for Shake Battery --- */
         .shake-battery-icon {
-            width: 150px; 
-            height: 70px; 
+            width: 150px;
+            height: 70px;
             border: 4px solid #5A6A7D;
             border-radius: 12px;
             position: relative;
-            background: #cbd5e1; 
+            background: #cbd5e1;
             display: flex;
             align-items: center;
             justify-content: center;
-            overflow: hidden; 
+            overflow: hidden;
         }
         .shake-battery-icon::after {
             content: '';
@@ -116,30 +89,31 @@
             height: 100%;
             border-radius: 0;
             width: 10%; /* Start at 10% */
-            transition: width 0.1s linear, background-color 0.3s ease; 
+            transition: width 0.5s linear, background-color 0.5s ease;
         }
-
-        /* --- Styles for VERTICAL battery --- */
+        
+        /* --- Styles for Fast Charge Battery --- */
         .vertical-battery-icon {
-            width: 70px;
-            height: 150px;
-            border: 4px solid #5A6A7D;
-            border-radius: 12px;
+            width: 120px; /* Width */
+            height: 220px; /* Height */
+            border: 6px solid #5A6A7D;
+            border-radius: 18px;
             position: relative;
             background: #cbd5e1;
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
+            margin-bottom: 20px;
         }
-        .vertical-battery-icon::before {
+        .vertical-battery-icon::after {
             content: '';
             position: absolute;
-            top: -12px;
+            top: -14px; /* On top */
             left: 50%;
             transform: translateX(-50%);
-            width: 30px;
-            height: 8px;
+            width: 30px; /* Terminal width */
+            height: 8px; /* Terminal height */
             background: #5A6A7D;
             border-radius: 4px;
         }
@@ -153,46 +127,45 @@
         }
 
         /* --- Bubbles animation for Fast Charging --- */
-        .charging-bubbles {
+        .bubbles {
             position: absolute;
             bottom: 0;
             left: 0;
             width: 100%;
             height: 100%;
             overflow: hidden;
-            border-radius: 12px;
+            z-index: 10;
         }
-        .bubble {
+        .bubbles span {
             position: absolute;
-            bottom: -20px; 
-            width: 10px;
-            height: 10px;
-            background: rgba(34, 197, 94, 0.5); 
+            bottom: -20px; /* Start below screen */
+            width: 15px;
+            height: 15px;
+            background-color: rgba(74, 222, 128, 0.5); /* Green bubbles */
             border-radius: 50%;
-            animation: rise 3s infinite ease-in;
             opacity: 0;
+            animation: bubble-rise 2s linear infinite;
         }
-        .bubble:nth-child(1) { left: 15%; animation-delay: 0s; }
-        .bubble:nth-child(2) { left: 40%; animation-delay: 0.5s; width: 8px; height: 8px; }
-        .bubble:nth-child(3) { left: 70%; animation-delay: 1s; }
-        .bubble:nth-child(4) { left: 80%; animation-delay: 1.5s; width: 12px; height: 12px; }
-        .bubble:nth-child(5) { left: 50%; animation-delay: 2s; }
+        .bubbles span:nth-child(1) { left: 20%; animation-delay: 0s; }
+        .bubbles span:nth-child(2) { left: 40%; animation-delay: 0.5s; width: 10px; height: 10px; }
+        .bubbles span:nth-child(3) { left: 60%; animation-delay: 1.2s; }
+        .bubbles span:nth-child(4) { left: 80%; animation-delay: 1.8s; width: 12px; height: 12px; }
 
-        @keyframes rise {
+        @keyframes bubble-rise {
             0% {
-                bottom: -20px;
+                transform: translateY(0);
                 opacity: 0;
             }
-            10% {
+            50% {
                 opacity: 1;
             }
             100% {
-                bottom: 110%; 
+                transform: translateY(-200px); /* Rise up */
                 opacity: 0;
             }
         }
 
-
+        /* --- General Styles --- */
         .icon-list-item {
             display: flex;
             align-items: center;
@@ -211,598 +184,613 @@
             animation: pulse 1.5s infinite;
         }
         
-        @keyframes shake {
-            0%, 100% { transform: rotate(0deg); }
-            25% { transform: rotate(5deg); }
-            75% { transform: rotate(-5deg); }
+        /* --- Status Bar Battery (Top Right) --- */
+        .status-bar-battery {
+            width: 25px;
+            height: 12px;
+            border: 1px solid currentColor;
+            border-radius: 3px;
+            position: relative;
+            margin-right: 2px;
         }
-        .animate-shake {
-            animation: shake 0.5s infinite;
+        .status-bar-battery::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            right: -3px;
+            width: 2px;
+            height: 6px;
+            background: currentColor;
+            border-radius: 0 1px 1px 0;
         }
-
+        .status-bar-battery-fill {
+            position: absolute;
+            top: 1px;
+            left: 1px;
+            height: calc(100% - 2px);
+            border-radius: 2px;
+            width: 10%; /* Start at 10% */
+            transition: width 0.5s linear, background-color 0.5s ease;
+        }
     </style>
 </head>
-<!-- Dark background for desktop, center the "phone" --><body class="bg-gray-700 min-h-screen flex items-center justify-center p-4">
 
-    <!-- Container imitating a phone --><div class="w-full max-w-sm h-[85vh] max-h-[800px] flex flex-col bg-[#E0F2FE] text-[#1F2D3D] rounded-2xl shadow-xl overflow-hidden relative">
+<!-- Main container, full screen -->
+<body class="flex flex-col h-screen bg-[#E0F2FE] text-[#1F2D3D]">
 
-        <!-- Top bar (imitating status bar and app header) --><div class="w-full bg-white text-gray-800 text-sm flex items-center justify-between p-2 relative z-10 shadow-sm flex-shrink-0">
-            <div class="flex items-center space-x-2">
-                <span class="font-bold text-xs">14:37</span><span class="w-2 h-2 rounded-full bg-green-500"></span><span class="font-bold text-gray-700">Battery App</span>
-            </div>
-            <div class="flex items-center space-x-3">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
-                    <path d="M10 6a2 2 0 110-4 2 2 0 010 4zm0 6a2 2 0 110-4 2 2 0 010 4zm0 6a2 2 0 110-4 2 2 0 010 4z" />
-                </svg>
-                
-                <!-- Status bar battery (SYNCHRONIZED) -->
-                <div id="statusBarBattery" class="status-bar-battery text-red-500">
-                    <div id="statusBarBatteryFill" class="status-bar-battery-fill bg-red-500"></div>
-                </div>
-                
-                <!-- This is the icon you wanted to remove -->
-                <!-- 
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.707-10.293a1 1 0 00-1.414-1.414L7.586 9H5a1 1 0 100 2h2.586l1.707 1.707a1 1 0 001.414-1.414L10.414 10l.293-.293z" clip-rule="evenodd" />
-                </svg>
-                -->
-            </div>
+    <!-- Top Bar (Status bar + App Header) -->
+    <div class="w-full bg-white text-gray-800 text-sm flex items-center justify-between p-2 relative z-10 shadow-sm flex-shrink-0">
+        <div class="flex items-center space-x-2">
+            <span class="font-bold text-xs">14:37</span>
+            <span class="w-2 h-2 rounded-full bg-green-500"></span>
+            <span class="font-bold text-gray-700">Battery App</span>
         </div>
-
-
-        <!-- Content area (switchable pages) --><div class="flex-1 overflow-y-auto">
+        <div class="flex items-center space-x-3">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M10 6a2 2 0 110-4 2 2 0 010 4zm0 6a2 2 0 110-4 2 2 0 010 4zm0 6a2 2 0 110-4 2 2 0 010 4z" />
+            </svg>
             
-            <!-- "HOME" PAGE (visible by default) --><div id="homePage" class="flex flex-col items-center justify-start p-4">
-
-                <!-- Battery and percentage --><div class="relative mt-8 mb-6 flex flex-col items-center justify-center flex-shrink-0">
-                    <div class="app-battery-icon">
-                        <div class="app-battery-fill"></div>
-                    </div>
-                    <p class="text-6xl font-extrabold text-[#1F2F3D] mt-4">10<span class="text-3xl font-bold align-super">%</span></p>
-                </div>
-
-                <!-- DETECT Button --><button class="bg-[#4CAF50] text-white font-bold py-3 px-8 rounded-full shadow-lg text-xl mb-8 animate-pulse-light flex-shrink-0">
-                    DETECT
-                </button>
-
-                <!-- Info sections --><div class="w-full max-w-sm flex justify-around mb-8 flex-shrink-0">
-                    <div class="text-center">
-                        <p class="text-gray-500 text-sm">Remaining</p>
-                        <p class="text-lg font-semibold text-[#1F2F3D]">--</p>
-                    </div>
-                    <div class="text-center">
-                        <p class="text-gray-500 text-sm">Power</p>
-                        <p class="text-lg font-semibold text-[#1F2F3D]">--</p>
-                    </div>
-                </div>
-
-                <!-- Specs list --><div class="w-full max-w-sm bg-white rounded-lg shadow-md py-4 px-6 mb-4 flex-shrink-0">
-                    <!-- Plugged / On Battery --><div class="flex items-center justify-between py-2 border-b border-gray-100">
-                        <div class="flex items-center">
-                            <div class="icon-list-item">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" />
-                                </svg>
-                            </div>
-                            <span class="text-gray-700">Plugged</span>
-                        </div>
-                        <span class="text-blue-500 font-semibold">On Battery</span>
-                    </div>
-                    <!-- Temperature --><div class="flex items-center justify-between py-2 border-b border-gray-100">
-                        <div class="flex items-center">
-                            <div class="icon-list-item">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.61-1.56-2.99 0a3.75 3.75 0 00-2.13 1.09c-.38.38-.63.85-.75 1.34A6.002 6.002 0 0010 18a6.002 6.002 0 004.38-10.38c-.12-.49-.37-.96-.75-1.34a3.75 3.75 0 00-2.13-1.09z" clip-rule="evenodd" />
-                                </svg>
-                            </div>
-                            <span class="text-gray-700">Temperature</span>
-                        </div>
-                        <span class="text-[#1F2F3D] font-semibold">33.5°C/ 92°F</span>
-                    </div>
-                    <!-- Health --><div class="flex items-center justify-between py-2 border-b border-gray-100">
-                        <div class="flex items-center">
-                            <div class="icon-list-item">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" />
-                                </svg>
-                            </div>
-                            <span class="text-gray-700">Health</span>
-                        </div>
-                        <span class="text-green-500 font-semibold">Good</span>
-                    </div>
-                    <!-- Charging Current --><div class="flex items-center justify-between py-2 border-b border-gray-100">
-                        <div class="flex items-center">
-                            <div class="icon-list-item">
-                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.707-10.293a1 1 0 00-1.414-1.414L7.586 9H5a1 1 0 100 2h2.586l1.707 1.707a1 1 0 001.414-1.414L10.414 10l.293-.293z" clip-rule="evenodd" />
-                                </svg>
-                            </div>
-                            <span class="text-gray-700">Charging Current</span>
-                        </div>
-                        <span class="text-[#1F2F3D] font-semibold">--</span>
-                    </div>
-                    <!-- Voltage --><div class="flex items-center justify-between py-2 border-b border-gray-100">
-                        <div class="flex items-center">
-                            <div class="icon-list-item">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10H5a1 1 0 000 2h3.586l-1.293 1.293a1 1 0 101.414 1.414L12.414 10l-3.707-3.707z" clip-rule="evenodd" />
-                                </svg>
-                            </div>
-                            <span class="text-gray-700">Voltage</span>
-                        </div>
-                        <span class="text-[#1F2F3D] font-semibold">--</span>
-                    </div>
-                    <!-- Capacity --><div class="flex items-center justify-between py-2 border-b border-gray-100">
-                        <div class="flex items-center">
-                            <div class="icon-list-item">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
-                                    <path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM4.381 4.54a1 1 0 10-1.236-1.54l-.454.364A1 1 0 003 4.54V5a1 1 0 002 0V4.54zM16.76 3.004a1 1 0 00-1.236 1.54l.454.364A1 1 0 0017 4.54V4a1 1 0 00-1-1h-.24zM15 11a1 1 0 000-2h-.032a1 1 0 100 2H15zM4 11a1 1 0 100-2H3.968a1 1 0 100 2H4zm8.293 4.707a1 1 0 001.414-1.414L12.414 13H15a1 1 0 000-2h-2.586l1.293-1.293a1 1 0 10-1.414-1.414L10 12.586l-1.707-1.707a1 1 0 00-1.414 1.414L7.586 13H5a1 1 0 000 2h2.586l-1.293 1.293a1 1 0 001.414 1.414L10 15.414l1.707 1.707z" />
-                                </svg>
-                            </div>
-                            <span class="text-gray-700">Capacity</span>
-                        </div>
-                        <span class="text-blue-500 font-semibold">2815 mAh</span>
-                    </div>
-                    <!-- Technology --><div class="flex items-center justify-between py-2 border-b border-gray-100">
-                        <div class="flex items-center">
-                            <div class="icon-list-item">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
-                                    <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2.586l.293.293A1 1 0 0010 16.586v-3.828l.293.293a1 1 0 001.414-1.414L10 9.414l-1.707-1.707a1 1 0 00-1.414 0L5 9.414V6.586a1 1 0 00-1.707-.707l-2-2a1 1 0 000-1.414l-1-1a1 1 0 00-1.414 1.414L2.586 7H1v12a1 1 0 001 1h16a1 1 0 001-1V4a1 1 0 00-1-1H11.707z" />
-                                </svg>
-                            </div>
-                            <span class="text-gray-700">Technology</span>
-                        </div>
-                        <span class="text-[#1F2D3D] font-semibold">Li-ion</span>
-                    </div>
-                    <!-- Model --><div class="flex items-center justify-between py-2">
-                        <div class="flex items-center">
-                            <div class="icon-list-item">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M7 2a2 2 0 00-2 2v12a2 2 0 002 2h6a2 2 0 002-2V4a2 2 0 00-2-2H7zm3 14a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
-                                </svg>
-                            </div>
-                            <span class="text-gray-700">Model</span>
-                        </div>
-                        <span class="text-blue-500 font-semibold">iPhone 12</span>
-                    </div>
-                </div>
-            </div> <!-- End #homePage -->
-
-            <!-- "TOOLS" PAGE (MENU) (hidden by default) --><div id="toolsPage" class="hidden flex flex-col items-center justify-center p-4 h-full space-y-10">
-
-                <!-- "Shake to charge" Button --><div id="goToShakeButton" class="flex flex-col items-center text-center cursor-pointer p-4 rounded-lg hover:bg-blue-100 transition-all">
-                    <div class="w-20 h-20 text-blue-500 animate-shake">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-full w-full" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                          <path stroke-linecap="round" stroke-linejoin="round" d="M12 18h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                        </svg>
-                    </div>
-                    <p class="text-lg font-semibold text-gray-700 mt-4">Shake your phone to charge it</p>
-                </div>
-
-                <!-- "Fast charging" Button --><div id="goToFastChargeButton" class="flex flex-col items-center text-center cursor-pointer p-4 rounded-lg hover:bg-blue-100 transition-all">
-                    <div class="w-20 h-20 text-yellow-400">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-full w-full" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                          <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                        </svg>
-                    </div>
-                    <p class="text-lg font-semibold text-gray-700 mt-4">Super fast charging</p>
-                </div>
-
-            </div> <!-- End #toolsPage -->
+            <!-- Status bar battery (SYNCHRONIZED) -->
+            <div id="statusBarBattery" class="status-bar-battery text-red-500">
+                <div id="statusBarBatteryFill" class="status-bar-battery-fill bg-red-500"></div>
+            </div>
             
-            <!-- "SHAKE TO CHARGE" PAGE (hidden by default) --><div id="shakePage" class="hidden flex flex-col items-center justify-center p-4 h-full">
+        </div>
+    </div>
 
-                <!-- "Shake" Block --><div class="flex flex-col items-center text-center">
-                    
-                    <!-- Shake Battery Icon -->
-                    <div class="shake-battery-icon mb-4">
-                        <!-- Charging Bolt Icon (animated) -->
-                        <div id="chargingBoltIcon" class="absolute z-10 hidden">
-                             <svg class="w-12 h-12 text-white" style="text-shadow: 1px 1px 2px rgba(0,0,0,0.5);" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                              <path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd" />
+
+    <!-- Content Area (Swappable Pages) -->
+    <div classs="flex-1 overflow-y-auto">
+        
+        <!-- PAGE 1: HOME (Visible by default) -->
+        <div id="homePage" class="flex flex-col items-center justify-start p-4">
+
+            <!-- Battery & Percentage -->
+            <div class="relative mt-8 mb-6 flex flex-col items-center justify-center flex-shrink-0">
+                <div class="app-battery-icon">
+                    <div class="app-battery-fill"></div>
+                </div>
+                <p class="text-6xl font-extrabold text-[#1F2F3D] mt-4">10<span class="text-3xl font-bold align-super">%</span></p>
+            </div>
+
+            <!-- Detect Button -->
+            <button class="bg-[#4CAF50] text-white font-bold py-3 px-8 rounded-full shadow-lg text-xl mb-8 animate-pulse-light flex-shrink-0">
+                DETECT
+            </button>
+
+            <!-- Info Sections -->
+            <div class="w-full max-w-sm flex justify-around mb-8 flex-shrink-0">
+                <div class="text-center">
+                    <p class="text-gray-500 text-sm">Remaining</p>
+                    <p class="text-lg font-semibold text-[#1F2F3D]">--</p>
+                </div>
+                <div class="text-center">
+                    <p class="text-gray-500 text-sm">Power</p>
+                    <p class="text-lg font-semibold text-[#1F2F3D]">--</p>
+                </div>
+            </div>
+
+            <!-- Details List -->
+            <div class="w-full max-w-sm bg-white rounded-lg shadow-md py-4 px-6 mb-4 flex-shrink-0">
+                <!-- Connected / On Battery -->
+                <div class="flex items-center justify-between py-2 border-b border-gray-100">
+                    <div class="flex items-center">
+                        <div class="icon-list-item">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" />
                             </svg>
                         </div>
-                        <!-- Battery Fill -->
-                        <div id="shakeBatteryFill" class="shake-battery-fill"></div>
-                        <span id="shakeBatteryPercent" class="relative text-3xl font-bold text-white" style="text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">10%</span>
+                        <span class="text-gray-700">Connected</span>
                     </div>
-                    
-                    <p class="text-lg font-semibold text-gray-700 mt-4">Shake your phone to charge it</p>
-                    <p id="shakeStatus" class="text-sm text-gray-500 h-4 mt-2"></p>
+                    <span class="text-blue-500 font-semibold">On Battery</span>
                 </div>
 
-            </div> <!-- End #shakePage -->
-            
-            <!-- "FAST CHARGE" PAGE (hidden by default) --><div id="fastChargePage" class="hidden flex flex-col items-center justify-center p-4 h-full">
-
-                <div class="flex flex-col items-center text-center">
-                    <!-- Vertical Battery -->
-                    <div class="vertical-battery-icon mb-2">
-                        <!-- Bubble animation (appears on charge) -->
-                        <div id="bubbleContainer" class="charging-bubbles hidden">
-                            <div class="bubble"></div>
-                            <div class="bubble"></div>
-                            <div class="bubble"></div>
-                            <div class="bubble"></div>
-                            <div class="bubble"></div>
+                <!-- Temperature -->
+                <div class="flex items-center justify-between py-2 border-b border-gray-100">
+                    <div class="flex items-center">
+                        <div class="icon-list-item">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.61-1.56-2.99 0a3.75 3.75 0 00-2.13 1.09c-.38.38-.63.85-.75 1.34A6.002 6.002 0 0010 18a6.002 6.002 0 004.38-10.38c-.12-.49-.37-.96-.75-1.34a3.75 3.75 0 00-2.13-1.09z" clip-rule="evenodd" />
+                            </svg>
                         </div>
-                        <div id="verticalBatteryFill" class="vertical-battery-fill bg-red-500"></div>
+                        <span class="text-gray-700">Temperature</span>
                     </div>
-                    
-                    <!-- Percentage text -->
-                    <p id="fastChargePercent" class="text-2xl font-bold text-gray-700 mt-3">0%</p>
-                    
-                    <p class="text-2xl font-semibold text-gray-700 mt-4">Fast Charging</p>
-                    
-                    <button id="fastChargeButton" class="bg-green-500 text-white font-bold py-3 px-10 rounded-full shadow-lg text-xl mt-8 transition-all">
-                        On
-                    </button>
+                    <span class="text-[#1F2F3D] font-semibold">33.5°C/ 92°F</span>
                 </div>
 
-            </div> <!-- End #fastChargePage --></div>
+                <!-- Health -->
+                <div class="flex items-center justify-between py-2 border-b border-gray-100">
+                    <div class="flex items-center">
+                        <div class="icon-list-item">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <span class="text-gray-700">Health</span>
+                    </div>
+                    <span class="text-green-500 font-semibold">Good</span>
+                </div>
+                
+                <!-- Charging Current -->
+                <div class="flex items-center justify-between py-2 border-b border-gray-100">
+                    <div class="flex items-center">
+                        <div class="icon-list-item">
+                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.707-10.293a1 1 0 00-1.414-1.414L7.586 9H5a1 1 0 100 2h2.586l1.707 1.707a1 1 0 001.414-1.414L10.414 10l.293-.293z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <span class="text-gray-700">Charging Current</span>
+                    </div>
+                    <span class="text-[#1F2F3D] font-semibold">--</span>
+                </div>
 
+                <!-- Voltage -->
+                <div class="flex items-center justify-between py-2 border-b border-gray-100">
+                    <div class="flex items-center">
+                        <div class="icon-list-item">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10H5a1 1 0 000 2h3.586l-1.293 1.293a1 1 0 101.414 1.414L12.414 10l-3.707-3.707z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <span class="text-gray-700">Voltage</span>
+                    </div>
+                    <span class="text-[#1F2F3D] font-semibold">--</span>
+                </div>
 
-        <!-- Bottom navigation bar --><div class="w-full bg-white text-gray-600 flex justify-around items-center p-3 border-t border-gray-200 shadow-lg relative z-10 flex-shrink-0">
+                <!-- Capacity -->
+                <div class="flex items-center justify-between py-2 border-b border-gray-100">
+                    <div class="flex items-center">
+                        <div class="icon-list-item">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM4.381 4.54a1 1 0 10-1.236-1.54l-.454.364A1 1 0 003 4.54V5a1 1 0 002 0V4.54zM16.76 3.004a1 1 0 00-1.236 1.54l.454.364A1 1 0 0017 4.54V4a1 1 0 00-1-1h-.24zM15 11a1 1 0 000-2h-.032a1 1 0 100 2H15zM4 11a1 1 0 100-2H3.968a1 1 0 100 2H4zm8.293 4.707a1 1 0 001.414-1.414L12.414 13H15a1 1 0 000-2h-2.586l1.293-1.293a1 1 0 10-1.414-1.414L10 12.586l-1.707-1.707a1 1 0 00-1.414 1.414L7.586 13H5a1 1 0 000 2h2.586l-1.293 1.293a1 1 0 001.414 1.414L10 15.414l1.707 1.707z" />
+                            </svg>
+                        </div>
+                        <span class="text-gray-700">Capacity</span>
+                    </div>
+                    <span class="text-blue-500 font-semibold">2815 mAh</span>
+                </div>
+
+                <!-- Technology -->
+                <div class="flex items-center justify-between py-2 border-b border-gray-100">
+                    <div class="flex items-center">
+                        <div class="icon-list-item">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2.586l.293.293A1 1 0 0010 16.586v-3.828l.293.293a1 1 0 001.414-1.414L10 9.414l-1.707-1.707a1 1 0 00-1.414 0L5 9.414V6.586a1 1 0 00-1.707-.707l-2-2a1 1 0 000-1.414l-1-1a1 1 0 00-1.414 1.414L2.586 7H1v12a1 1 0 001 1h16a1 1 0 001-1V4a1 1 0 00-1-1H11.707z" />
+                            </svg>
+                        </div>
+                        <span class="text-gray-700">Technology</span>
+                    </div>
+                    <span class="text-[#1F2F3D] font-semibold">Li-ion</span>
+                </div>
+
+                <!-- Model -->
+                <div class="flex items-center justify-between py-2">
+                    <div class="flex items-center">
+                        <div class="icon-list-item">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M7 2a2 2 0 00-2 2v12a2 2 0 002 2h6a2 2 0 002-2V4a2 2 0 00-2-2H7zm3 14a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <span class="text-gray-700">Model</span>
+                    </div>
+                    <span class="text-blue-500 font-semibold">iPhone 12</span>
+                </div>
+            </div>
+        </div> <!-- End #homePage -->
+
+        <!-- PAGE 2: TOOLS MENU (Hidden by default) -->
+        <div id="toolsPage" class="hidden flex flex-col items-center justify-center p-4 h-full">
+            <div class="w-full max-w-sm space-y-6">
+                
+                <!-- Shake to Charge Button -->
+                <div id="shakeChargeButton" class="bg-white p-6 rounded-lg shadow-md flex items-center space-x-4 cursor-pointer transition-transform transform hover:scale-105">
+                    <svg class="h-10 w-10 text-blue-500 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11.5V14m0-2.5v-6a1.5 1.5 0 113 0m-3 6a1.5 1.5 0 00-3 0v2.5m3-2.5v-6.5m0 0a1.5 1.5 0 013 0m-3 0V3m0 0a1.5 1.5 0 013 0m0 0v1.5m-3-1.5V3m0 11v6.5m0 0m0 0a1.5 1.5 0 01-3 0M10 3v1.5m0 0a1.5 1.5 0 013 0m0 0V3m0 0a1.5 1.5 0 013 0m0 0v1.5m-3-1.5V3m3 8.5v6.5m0 0a1.5 1.5 0 01-3 0m3 0V17m0 0a1.5 1.5 0 01-3 0m3 0v-1.5m0 0a1.5 1.5 0 01-3 0m0-1.5V14m0 0v-2.5" />
+                    </svg>
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-800">Shake your phone to charge it</h3>
+                        <p class="text-sm text-gray-500">Activates motion charging</p>
+                    </div>
+                </div>
+
+                <!-- Super fast charging Button -->
+                <div id="fastChargeButton" class="bg-white p-6 rounded-lg shadow-md flex items-center space-x-4 cursor-pointer transition-transform transform hover:scale-105">
+                    <svg class="h-10 w-10 text-green-500 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-800">Super fast charging</h3>
+                        <p class="text-sm text-gray-500">Simulates fast charging</p>
+                    </div>
+                </div>
+
+            </div>
+        </div> <!-- End #toolsPage -->
+
+        <!-- PAGE 3: SHAKE TO CHARGE (Hidden by default) -->
+        <div id="shakePage" class="hidden flex flex-col items-center justify-center p-4 h-full">
+
+            <!-- Shake Battery Block -->
+            <div class="flex flex-col items-center text-center">
+                
+                <!-- Shake Battery Icon -->
+                <div class="shake-battery-icon mb-4">
+                    <!-- Lightning Bolt Animation -->
+                    <svg id="shakeLightning" class="absolute h-10 w-10 text-yellow-300 z-10 hidden" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5.2H8.5a1 1 0 00-.97 1.243l1.5 6.25A1 1 0 0010 16h.5v2.8a1 1 0 01-1.636.77l-1.5-2.25A1 1 0 006.5 17H6a1 1 0 01-1-1v-5.2h3.5a1 1 0 00.97-1.243l-1.5-6.25A1 1 0 007 2H6.5V.2a1 1 0 011.636-.77l1.5 2.25A1 1 0 0010.5 3H11a1 1 0 01.3-1.046z" clip-rule="evenodd" />
+                    </svg>
+                    <div id="shakeBatteryFill" class="shake-battery-fill bg-red-500"></div>
+                    <span id="shakeBatteryPercent" class="relative text-3xl font-bold text-white" style="text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">10%</span>
+                </div>
+                
+                <p class="text-lg font-semibold text-gray-700 mt-4">Shake your phone to charge it</p>
+                <p id="shakeStatus" class="text-sm text-gray-500 h-4 mt-2"></p>
+            </div>
+
+        </div> <!-- End #shakePage -->
+
+        <!-- PAGE 4: FAST CHARGING (Hidden by default) -->
+        <div id="fastChargePage" class="hidden flex flex-col items-center justify-center p-4 h-full">
             
-            <!-- "Home" Button --><div id="navHomeButton" class="flex flex-col items-center cursor-pointer">
-                <svg id="navHomeIcon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
-                    <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2.586l.293.293A1 1 0 0010 16.586v-3.828l.293.293a1 1 0 001.414-1.414L10 9.414l-1.707-1.707a1 1 0 00-1.414 0L5 9.414V6.586a1 1 0 00-1.707-.707l-2-2a1 1 0 000-1.414l-1-1a1 1 0 00-1.414 1.414L2.586 7H1v12a1 1 0 001 1h16a1 1 0 001-1V4a1 1 0 00-1-1H11.707z" />
-                </svg>
-                <span id="navHomeText" class="text-xs text-blue-500 mt-1">Home</span>
+            <!-- Vertical Battery Icon -->
+            <div class="vertical-battery-icon">
+                <div id="verticalBatteryFill" class="vertical-battery-fill bg-red-500"></div>
+                <!-- Bubble Animation Container -->
+                <div id="bubbleContainer" class="bubbles hidden">
+                    <span></span><span></span><span></span><span></span>
+                </div>
             </div>
+            
+            <!-- Percentage Display -->
+            <p id="fastChargePercent" class="text-4xl font-bold text-gray-800 mb-2">0%</p>
+            <p class="text-lg font-semibold text-gray-700 mb-6">Fast Charging</p>
 
-            <!-- "Tools" Button --><div id="navToolsButton" class="flex flex-col items-center cursor-pointer">
-                <svg id="navToolsIcon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" viewBox="0 0 20 20" fill="currentColor">
-                    <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4zm4 4V6h2v2H9zm0 4v-2h2v2H9zm0 4v-2h2v2H9z" />
-                </svg>
-                <span id="navToolsText" class="text-xs text-gray-600 mt-1">Tools</span>
-            </div>
+            <!-- On/Off Button -->
+            <button id="fastChargeToggleButton" class="bg-green-500 text-white font-bold py-3 px-10 rounded-full shadow-lg text-xl transition-colors duration-300">
+                On
+            </button>
+            
+        </div> <!-- End #fastChargePage -->
+    </div>
 
+
+    <!-- Bottom Navigation Bar -->
+    <div class="w-full bg-white text-gray-600 flex justify-around items-center p-3 border-t border-gray-200 shadow-lg relative z-10 flex-shrink-0">
+        
+        <!-- Home Button -->
+        <div id="navHomeButton" class="flex flex-col items-center cursor-pointer">
+            <svg id="navHomeIcon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2.586l.293.293A1 1 0 0010 16.586v-3.828l.293.293a1 1 0 001.414-1.414L10 9.414l-1.707-1.707a1 1 0 00-1.414 0L5 9.414V6.586a1 1 0 00-1.707-.707l-2-2a1 1 0 000-1.414l-1-1a1 1 0 00-1.414 1.414L2.586 7H1v12a1 1 0 001 1h16a1 1 0 001-1V4a1 1 0 00-1-1H11.707z" />
+            </svg>
+            <span id="navHomeText" class="text-xs text-blue-500 mt-1">Home</span>
         </div>
-    </div> <!-- End "phone" container --><script>
-        // --- Navigation elements and pages ---
-        const homePage = document.getElementById('homePage');
-        const toolsPage = document.getElementById('toolsPage');
-        const shakePage = document.getElementById('shakePage');
-        const fastChargePage = document.getElementById('fastChargePage');
 
-        const navHomeButton = document.getElementById('navHomeButton');
-        const navHomeIcon = document.getElementById('navHomeIcon');
-        const navHomeText = document.getElementById('navHomeText');
+        <!-- Tools Button -->
+        <div id="navToolsButton" class="flex flex-col items-center cursor-pointer">
+            <svg id="navToolsIcon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4zm4 4V6h2v2H9zm0 4v-2h2v2H9zm0 4v-2h2v2H9z" />
+            </svg>
+            <span id="navToolsText" class="text-xs text-gray-600 mt-1">Tools</span>
+        </div>
 
-        const navToolsButton = document.getElementById('navToolsButton');
-        const navToolsIcon = document.getElementById('navToolsIcon');
-        const navToolsText = document.getElementById('navToolsText');
+    </div>
 
-        // --- "Shake to charge" elements ---
-        const goToShakeButton = document.getElementById('goToShakeButton');
-        const shakeBatteryFill = document.getElementById('shakeBatteryFill');
-        const shakeBatteryPercent = document.getElementById('shakeBatteryPercent');
-        const shakeStatus = document.getElementById('shakeStatus');
-        const chargingBoltIcon = document.getElementById('chargingBoltIcon');
+<script>
+    // --- Page Elements ---
+    const homePage = document.getElementById('homePage');
+    const toolsPage = document.getElementById('toolsPage');
+    const shakePage = document.getElementById('shakePage');
+    const fastChargePage = document.getElementById('fastChargePage');
+
+    // --- Navigation Elements ---
+    const navHomeButton = document.getElementById('navHomeButton');
+    const navHomeIcon = document.getElementById('navHomeIcon');
+    const navHomeText = document.getElementById('navHomeText');
+    const navToolsButton = document.getElementById('navToolsButton');
+    const navToolsIcon = document.getElementById('navToolsIcon');
+    const navToolsText = document.getElementById('navToolsText');
+
+    // --- Tools Menu Buttons ---
+    const shakeChargeButton = document.getElementById('shakeChargeButton');
+    const fastChargeButton = document.getElementById('fastChargeButton');
+
+    // --- Status Bar Battery (Top) ---
+    const statusBarBattery = document.getElementById('statusBarBattery');
+    const statusBarBatteryFill = document.getElementById('statusBarBatteryFill');
+
+    // --- Shake Page Elements ---
+    const shakeBatteryFill = document.getElementById('shakeBatteryFill');
+    const shakeBatteryPercent = document.getElementById('shakeBatteryPercent');
+    const shakeStatus = document.getElementById('shakeStatus');
+    const shakeLightning = document.getElementById('shakeLightning');
+
+    // --- Fast Charge Page Elements ---
+    const verticalBatteryFill = document.getElementById('verticalBatteryFill');
+    const fastChargePercent = document.getElementById('fastChargePercent');
+    const fastChargeToggleButton = document.getElementById('fastChargeToggleButton');
+    const bubbleContainer = document.getElementById('bubbleContainer');
+
+    // --- App State ---
+    let shakeLevel = 10; // Start at 10%
+    let motionPermissionGranted = false;
+    let isShaking = false;
+    let shakeTimeout;
+    let lastX, lastY, lastZ;
+    let lastUpdate = 0;
+    const SHAKE_THRESHOLD = 15;
+    
+    let isFastCharging = false;
+    let fastChargePercentValue = 0;
+    let fastChargeInterval;
+
+    // --- Navigation Logic ---
+    function navigateTo(pageId) {
+        // Hide all pages
+        homePage.classList.add('hidden');
+        toolsPage.classList.add('hidden');
+        shakePage.classList.add('hidden');
+        fastChargePage.classList.add('hidden');
+
+        // Deactivate all nav buttons
+        navHomeIcon.classList.remove('text-blue-500');
+        navHomeText.classList.remove('text-blue-500');
+        navHomeIcon.classList.add('text-gray-600');
+        navHomeText.classList.add('text-gray-600');
         
-        // --- "Fast Charge" elements ---
-        const goToFastChargeButton = document.getElementById('goToFastChargeButton');
-        const fastChargeButton = document.getElementById('fastChargeButton');
-        const verticalBatteryFill = document.getElementById('verticalBatteryFill');
-        const bubbleContainer = document.getElementById('bubbleContainer'); 
-        const fastChargePercent = document.getElementById('fastChargePercent'); 
-        let isFastChargingOn = false;
-        let fastChargeInterval; // Timer for percentage update
-        let fastChargePercentValue = 0;
+        navToolsIcon.classList.remove('text-blue-500');
+        navToolsText.classList.remove('text-blue-500');
+        navToolsIcon.classList.add('text-gray-600');
+        navToolsText.classList.add('text-gray-600');
 
-        // --- Status bar battery elements ---
-        const statusBarBattery = document.getElementById('statusBarBattery');
-        const statusBarBatteryFill = document.getElementById('statusBarBatteryFill');
-
-        // --- State ---
-        let shakeLevel = 10; // This is now the "master" charge level
-        let motionPermissionGranted = false;
-        const SHAKE_THRESHOLD = 25;
-        let lastX, lastY, lastZ;
+        // Stop sensors/animations
+        stopShakeListener();
+        if (isFastCharging) {
+             // Don't stop, let it run in background, just update status bar
+        }
         
-        let isShaking = false;
-        let lastShakeTime = 0;
-        let animationFrameId;
-        const CHARGE_RATE_PER_FRAME = 0.15 * (100 / 90); // (100% - 10%) / 10 sec / 60fps
+        // Reset status bar to main shakeLevel unless on fast charging page
+        if (pageId !== 'fastChargePage') {
+            updateStatusBarBattery(shakeLevel);
+        } else {
+            updateStatusBarBattery(fastChargePercentValue);
+        }
 
-
-        // --- Navigation Logic ---
-
-        function showHome() {
+        // Show the target page
+        if (pageId === 'home') {
             homePage.classList.remove('hidden');
-            toolsPage.classList.add('hidden');
-            shakePage.classList.add('hidden');
-            fastChargePage.classList.add('hidden');
-
-            navHomeIcon.classList.remove('text-gray-600');
             navHomeIcon.classList.add('text-blue-500');
-            navHomeText.classList.remove('text-gray-600');
             navHomeText.classList.add('text-blue-500');
-
-            navToolsIcon.classList.remove('text-blue-500');
-            navToolsIcon.classList.add('text-gray-600');
-            navToolsText.classList.remove('text-blue-500');
-            navToolsText.classList.add('text-gray-600');
-            
-            stopMotionSensor();
-            stopFastCharge(); 
-            updateStatusBarBattery(shakeLevel); // Reset status bar to master level
-        }
-
-        function showTools() {
-            homePage.classList.add('hidden');
+        } else if (pageId === 'tools') {
             toolsPage.classList.remove('hidden');
-            shakePage.classList.add('hidden');
-            fastChargePage.classList.add('hidden');
-
-            navHomeIcon.classList.remove('text-blue-500');
-            navHomeIcon.classList.add('text-gray-600');
-            navHomeText.classList.remove('text-blue-500');
-            navHomeText.classList.add('text-gray-600');
-
-            navToolsIcon.classList.remove('text-gray-600');
             navToolsIcon.classList.add('text-blue-500');
-            navToolsText.classList.remove('text-gray-600');
             navToolsText.classList.add('text-blue-500');
-
-            stopMotionSensor();
-            stopFastCharge();
-            updateStatusBarBattery(shakeLevel); // Reset status bar to master level
-        }
-
-        function showShakePage() {
-            homePage.classList.add('hidden');
-            toolsPage.classList.add('hidden');
+        } else if (pageId === 'shake') {
             shakePage.classList.remove('hidden');
-            fastChargePage.classList.add('hidden');
-            
-            activateMotionSensor();
-            stopFastCharge(); 
-        }
-        
-        function showFastChargePage() {
-            homePage.classList.add('hidden');
-            toolsPage.classList.add('hidden');
-            shakePage.classList.add('hidden');
+            navToolsIcon.classList.add('text-blue-500'); // Keep "Tools" active
+            navToolsText.classList.add('text-blue-500');
+            startShakeListener(); // Start sensor
+        } else if (pageId === 'fastCharge') {
             fastChargePage.classList.remove('hidden');
-            stopMotionSensor();
+            navToolsIcon.classList.add('text-blue-500'); // Keep "Tools" active
+            navToolsText.classList.add('text-blue-500');
+            // Logic for this page is handled by its button
+        }
+    }
+
+    // --- Status Bar Battery Logic ---
+    function updateStatusBarBattery(level) {
+        const percent = Math.max(0, Math.min(100, level));
+        statusBarBatteryFill.style.width = `${percent}%`;
+
+        statusBarBattery.classList.remove('text-red-500', 'text-yellow-400', 'text-green-500');
+        statusBarBatteryFill.classList.remove('bg-red-500', 'bg-yellow-400', 'bg-green-500');
+
+        if (percent < 20) {
+            statusBarBattery.classList.add('text-red-500');
+            statusBarBatteryFill.classList.add('bg-red-500');
+        } else if (percent < 60) {
+            statusBarBattery.classList.add('text-yellow-400');
+            statusBarBatteryFill.classList.add('bg-yellow-400');
+        } else {
+            statusBarBattery.classList.add('text-green-500');
+            statusBarBatteryFill.classList.add('bg-green-500');
+        }
+    }
+
+    // --- Shake to Charge Logic ---
+    
+    async function startShakeListener() {
+        if (!('DeviceMotionEvent' in window)) {
+            shakeStatus.textContent = 'Motion sensors not supported.';
+            return;
         }
 
-        // --- Motion Sensor Logic (Shake) ---
-        
-        function stopMotionSensor() {
-            window.removeEventListener('devicemotion', handleMotion);
-            if (animationFrameId) {
-                cancelAnimationFrame(animationFrameId);
-                animationFrameId = null;
-            }
-            if (shakeStatus) {
-                shakeStatus.textContent = '';
-            }
-            chargingBoltIcon.classList.add('hidden'); 
-            isShaking = false;
+        if (motionPermissionGranted) {
+            window.addEventListener('devicemotion', handleMotion);
+            shakeStatus.textContent = 'Shake your phone!';
+            return;
         }
 
-        async function activateMotionSensor() {
-            if (motionPermissionGranted) {
-                window.addEventListener('devicemotion', handleMotion);
-                if (!animationFrameId) {
-                    animationFrameId = requestAnimationFrame(chargeLoop);
+        if (typeof DeviceMotionEvent.requestPermission === 'function') {
+            try {
+                shakeStatus.textContent = 'Requesting sensor access...';
+                const permissionState = await DeviceMotionEvent.requestPermission();
+                
+                if (permissionState === 'granted') {
+                    motionPermissionGranted = true;
+                    window.addEventListener('devicemotion', handleMotion);
+                    shakeStatus.textContent = 'Shake your phone!';
+                } else {
+                    shakeStatus.textContent = 'Sensor access denied.';
                 }
-                shakeStatus.textContent = 'Shake your phone!';
+            } catch (error) {
+                shakeStatus.textContent = 'Sensor error. (Requires HTTPS)';
+            }
+        } else {
+            // Android, etc.
+            motionPermissionGranted = true;
+            window.addEventListener('devicemotion', handleMotion);
+            shakeStatus.textContent = 'Shake your phone!';
+        }
+    }
+
+    function stopShakeListener() {
+        window.removeEventListener('devicemotion', handleMotion);
+        shakeStatus.textContent = '';
+        if (shakeTimeout) clearTimeout(shakeTimeout);
+        shakeLightning.classList.add('hidden');
+    }
+
+    function handleMotion(event) {
+        const acceleration = event.accelerationIncludingGravity;
+        const currentTime = Date.now();
+
+        if (acceleration && acceleration.x !== null) {
+            if (lastX === undefined) {
+                lastX = acceleration.x;
+                lastY = acceleration.y;
+                lastZ = acceleration.z;
                 return;
             }
 
-            if (typeof DeviceMotionEvent.requestPermission === 'function') {
-                try {
-                    shakeStatus.textContent = 'Sensor access needed...';
-                    const permissionState = await DeviceMotionEvent.requestPermission();
-                    
-                    if (permissionState === 'granted') {
-                        motionPermissionGranted = true;
-                        window.addEventListener('devicemotion', handleMotion);
-                        if (!animationFrameId) {
-                            animationFrameId = requestAnimationFrame(chargeLoop);
-                        }
-                        shakeStatus.textContent = 'Shake your phone!';
-                    } else {
-                        shakeStatus.textContent = 'Sensor access denied.';
-                    }
-                } catch (error) {
-                    console.error("DeviceMotion request error:", error);
-                    shakeStatus.textContent = 'Sensor error. (HTTPS required)';
-                }
-            } else {
-                motionPermissionGranted = true;
-                window.addEventListener('devicemotion', handleMotion);
-                if (!animationFrameId) {
-                    animationFrameId = requestAnimationFrame(chargeLoop);
-                }
-                shakeStatus.textContent = 'Shake your phone!';
-            }
-        }
+            if ((currentTime - lastUpdate) > 100) {
+                const diffX = Math.abs(acceleration.x - lastX);
+                const diffY = Math.abs(acceleration.y - lastY);
+                const diffZ = Math.abs(acceleration.z - lastZ);
 
-        // Charge loop (requestAnimationFrame)
-        function chargeLoop() {
-            const now = Date.now();
-            
-            if (isShaking && (now - lastShakeTime) > 500) {
-                isShaking = false;
-                chargingBoltIcon.classList.add('hidden'); 
-                shakeStatus.textContent = 'Shake your phone!';
-            }
-            
-            if (isShaking && shakeLevel < 100) {
-                shakeLevel = Math.min(100, shakeLevel + CHARGE_RATE_PER_FRAME);
-                updateShakeBattery(); // Updates BOTH batteries
-                
-                if (shakeLevel >= 100) {
-                    shakeStatus.textContent = 'Battery charged!';
-                    chargingBoltIcon.classList.add('hidden');
-                    isShaking = false;
-                } else {
+                if ((diffX > SHAKE_THRESHOLD || diffY > SHAKE_THRESHOLD || diffZ > SHAKE_THRESHOLD)) {
+                    isShaking = true;
+                    shakeLightning.classList.remove('hidden');
                     shakeStatus.textContent = 'Charging!';
-                }
-            }
-            
-            animationFrameId = requestAnimationFrame(chargeLoop); // Continue loop
-        }
 
-        // Motion event handler
-        function handleMotion(event) {
-            const acceleration = event.accelerationIncludingGravity;
-            const currentTime = Date.now();
-
-            if (acceleration && acceleration.x !== null) {
-                if (lastX !== undefined) {
-                    const diffX = Math.abs(acceleration.x - lastX);
-                    const diffY = Math.abs(acceleration.y - lastY);
-                    const diffZ = Math.abs(acceleration.z - lastZ);
-
-                    if (diffX > SHAKE_THRESHOLD || diffY > SHAKE_THRESHOLD || diffZ > SHAKE_THRESHOLD) {
-                        if (shakeLevel < 100) {
-                            isShaking = true;
-                            lastShakeTime = currentTime;
-                            chargingBoltIcon.classList.remove('hidden'); 
-                        }
+                    if (shakeLevel < 100) {
+                        // Increase by ~1 every 100ms for 10 sec = 100%
+                        // 90% in 10 sec = 9% per sec = 0.9% per 100ms. Let's use 1.
+                        shakeLevel = Math.min(100, shakeLevel + 1);
+                        updateShakeBattery();
+                    } else {
+                        shakeStatus.textContent = 'Battery Full!';
+                        shakeLightning.classList.add('hidden');
                     }
+                    
+                    if (shakeTimeout) clearTimeout(shakeTimeout);
+                    shakeTimeout = setTimeout(() => {
+                        isShaking = false;
+                        shakeLightning.classList.add('hidden');
+                        if (shakeLevel < 100) {
+                            shakeStatus.textContent = 'Shake your phone!';
+                        }
+                    }, 500); // 0.5 sec timeout
                 }
                 
                 lastX = acceleration.x;
                 lastY = acceleration.y;
                 lastZ = acceleration.z;
+                lastUpdate = currentTime;
             }
         }
+    }
+
+    function updateShakeBattery() {
+        const percent = shakeLevel;
+        shakeBatteryPercent.textContent = `${percent}%`;
+        shakeBatteryFill.style.width = `${percent}%`;
         
-        // Updates BOTH Shake battery AND Status Bar battery
-        function updateShakeBattery() {
-            const displayLevel = Math.floor(shakeLevel);
+        // Sync status bar
+        updateStatusBarBattery(percent);
+
+        shakeBatteryFill.classList.remove('bg-red-500', 'bg-yellow-400', 'bg-green-500');
+        if (percent < 20) {
+            shakeBatteryFill.classList.add('bg-red-500');
+        } else if (percent < 60) {
+            shakeBatteryFill.classList.add('bg-yellow-400');
+        } else {
+            shakeBatteryFill.classList.add('bg-green-500');
+        }
+    }
+
+    // --- Fast Charging Logic ---
+
+    function toggleFastCharge() {
+        if (isFastCharging) {
+            // Turn Off
+            isFastCharging = false;
+            fastChargeToggleButton.textContent = 'On';
+            fastChargeToggleButton.classList.remove('bg-red-500');
+            fastChargeToggleButton.classList.add('bg-green-500');
             
-            // 1. Update large shake battery
-            shakeBatteryPercent.textContent = `${displayLevel}%`;
-            shakeBatteryFill.style.width = `${shakeLevel}%`; 
+            clearInterval(fastChargeInterval);
+            bubbleContainer.classList.add('hidden');
 
-            // 2. Update status bar battery
-            updateStatusBarBattery(shakeLevel);
-
-            // Update colors for shake battery
-            shakeBatteryFill.classList.remove('bg-red-500', 'bg-yellow-400', 'bg-green-500');
-            if (shakeLevel < 20) {
-                shakeBatteryFill.classList.add('bg-red-500');
-            } else if (shakeLevel < 60) {
-                shakeBatteryFill.classList.add('bg-yellow-400');
-            } else {
-                shakeBatteryFill.classList.add('bg-green-500');
-            }
-        }
-        
-        // --- "Fast Charge" Logic ---
-        
-        function stopFastCharge() {
-            if (isFastChargingOn) {
-                isFastChargingOn = false;
-                fastChargeButton.textContent = "On";
-                fastChargeButton.classList.remove('bg-red-500');
-                fastChargeButton.classList.add('bg-green-500');
+            // Reset
+            fastChargePercentValue = 0;
+            fastChargePercent.textContent = '0%';
+            verticalBatteryFill.style.transition = 'height 0.3s ease, background-color 0.3s ease';
+            verticalBatteryFill.style.height = '0%';
+            verticalBatteryFill.classList.remove('bg-yellow-400', 'bg-green-500');
+            verticalBatteryFill.classList.add('bg-red-500');
+            updateStatusBarBattery(shakeLevel); // Reset status bar to main level
+            
+        } else {
+            // Turn On
+            isFastCharging = true;
+            fastChargeToggleButton.textContent = 'Off';
+            fastChargeToggleButton.classList.remove('bg-green-500');
+            fastChargeToggleButton.classList.add('bg-red-500');
+            
+            // Reset percentage for new charge
+            fastChargePercentValue = 0;
+            fastChargePercent.textContent = '0%';
+            verticalBatteryFill.style.transition = 'height 0s, background-color 0.3s ease';
+            verticalBatteryFill.style.height = '0%';
+            verticalBatteryFill.classList.remove('bg-yellow-400', 'bg-green-500');
+            verticalBatteryFill.classList.add('bg-red-500');
+            
+            // Give the browser a tick to apply the reset
+            setTimeout(() => {
+                verticalBatteryFill.style.transition = 'height 10s linear, background-color 0.3s ease'; // 10 sec
+                verticalBatteryFill.style.height = '100%';
+                bubbleContainer.classList.remove('hidden'); 
                 
-                // Stop animation and reset
-                clearInterval(fastChargeInterval);
-                verticalBatteryFill.style.transition = 'height 0.5s ease'; // Fast reset
-                verticalBatteryFill.style.height = '0%';
-                verticalBatteryFill.classList.remove('bg-green-500');
-                verticalBatteryFill.classList.add('bg-red-500');
-                fastChargePercent.textContent = '0%';
-                bubbleContainer.classList.add('hidden'); 
-                
-                // Reset status bar battery
-                updateStatusBarBattery(shakeLevel); 
-            }
-        }
-        
-        function toggleFastCharge() {
-            if (isFastChargingOn) {
-                // Turning Off
-                stopFastCharge();
-            } else {
-                // Turning On
-                isFastChargingOn = true;
-                fastChargeButton.textContent = "Off";
-                fastChargeButton.classList.remove('bg-green-500');
-                fastChargeButton.classList.add('bg-red-500');
-                
-                // Reset and start
-                verticalBatteryFill.style.transition = 'height 0s, background-color 0.3s ease'; // Reset instantly
-                verticalBatteryFill.style.height = '0%';
-                fastChargePercentValue = 0;
-                fastChargePercent.textContent = '0%';
-                updateStatusBarBattery(0); // Sync status bar to 0
-                
-                // Give the browser a tick to apply the reset
-                setTimeout(() => {
-                    verticalBatteryFill.style.transition = 'height 10s linear, background-color 0.3s ease'; // 10 sec
-                    verticalBatteryFill.style.height = '100%';
-                    bubbleContainer.classList.remove('hidden'); 
-                    
-                    // Start percentage counter
-                    fastChargeInterval = setInterval(() => {
-                        if (fastChargePercentValue < 100) {
-                            fastChargePercentValue++;
-                            fastChargePercent.textContent = `${fastChargePercentValue}%`;
-                            
-                            // SYNC with status bar
-                            updateStatusBarBattery(fastChargePercentValue); 
-                            
-                            // Update color based on percentage
-                            if (fastChargePercentValue === 20) {
-                                verticalBatteryFill.classList.remove('bg-red-500');
-                                verticalBatteryFill.classList.add('bg-yellow-400');
-                            } else if (fastChargePercentValue === 60) {
-                                verticalBatteryFill.classList.remove('bg-yellow-400');
-                                verticalBatteryFill.classList.add('bg-green-500');
-                            }
-                            
-                        } else {
-                            clearInterval(fastChargeInterval);
+                // Start percentage counter
+                fastChargeInterval = setInterval(() => {
+                    if (fastChargePercentValue < 100) {
+                        fastChargePercentValue++;
+                        fastChargePercent.textContent = `${fastChargePercentValue}%`;
+                        
+                        // SYNC with status bar
+                        updateStatusBarBattery(fastChargePercentValue); 
+                        
+                        // Update color based on percentage
+                        if (fastChargePercentValue === 20) {
+                            verticalBatteryFill.classList.remove('bg-red-500');
+                            verticalBatteryFill.classList.add('bg-yellow-400');
+                        } else if (fastChargePercentValue === 60) {
+                            verticalBatteryFill.classList.remove('bg-yellow-400');
+                            verticalBatteryFill.classList.add('bg-green-500');
                         }
-                    }, 100); // 100 * 100ms = 10000ms = 10 sec
+                        
+                    } else {
+                        clearInterval(fastChargeInterval);
+                    }
+                }, 100); // 100 * 100ms = 10000ms = 10 sec
 
-                }, 50);
-            }
+            }, 50);
         }
-        
-        // --- Universal Status Bar Battery Updater ---
-        function updateStatusBarBattery(level) {
-            statusBarBatteryFill.style.width = `${level}%`;
-            
-            statusBarBatteryFill.classList.remove('bg-red-500', 'bg-yellow-400', 'bg-green-500');
-            statusBarBattery.classList.remove('text-red-500', 'text-yellow-400', 'text-green-500');
+    }
 
-            if (level < 20) {
-                statusBarBatteryFill.classList.add('bg-red-500');
-                statusBarBattery.classList.add('text-red-500');
-            } else if (level < 60) {
-                statusBarBatteryFill.classList.add('bg-yellow-400');
-                statusBarBattery.classList.add('text-yellow-400');
-            } else {
-                statusBarBatteryFill.classList.add('bg-green-500');
-                statusBarBattery.classList.add('text-green-500');
-            }
-        }
+    // --- Event Listeners ---
+    navHomeButton.addEventListener('click', () => navigateTo('home'));
+    navToolsButton.addEventListener('click', () => navigateTo('tools'));
+    shakeChargeButton.addEventListener('click', () => navigateTo('shake'));
+    fastChargeButton.addEventListener('click', () => navigateTo('fastCharge'));
+    fastChargeToggleButton.addEventListener('click', toggleFastCharge);
 
-
-        // --- Initialization ---
-        navHomeButton.addEventListener('click', showHome);
-        navToolsButton.addEventListener('click', showTools);
-        goToShakeButton.addEventListener('click', showShakePage);
-        goToFastChargeButton.addEventListener('click', showFastChargePage); 
-        fastChargeButton.addEventListener('click', toggleFastCharge);
-        
-        // Set initial state (10% and red)
-        updateShakeBattery(); 
-
-    </script>
+    // --- Initial Setup ---
+    navigateTo('home'); // Start on the home page
+    updateShakeBattery(); // Set initial 10%
+    
+</script>
 </body>
 </html>
-
 
