@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <!-- 
-      viewport-fit=cover: Говорит телефону использовать весь экран, включая "челку" и область под панелью "Домой".
-      Это необходимо для работы отступов "safe-area".
+      viewport-fit=cover: Tells the phone to use the entire screen, including the notch and home bar area.
+      This is required for safe-area insets to work.
     -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, viewport-fit=cover">
     
@@ -31,28 +31,26 @@
             user-select: none; 
         }
         
-        /* CSS-переменные для "безопасных зон" (Safe Area)
-          env(safe-area-inset-top) -> отступ для "челки" (notch)
-          env(safe-area-inset-bottom) -> отступ для панели "Домой" (home indicator)
+        /* CSS variables for "Safe Areas"
+          env(safe-area-inset-top) -> padding for the "notch"
+          env(safe-area-inset-bottom) -> padding for the "home indicator"
         */
         :root {
             --safe-area-inset-top: env(safe-area-inset-top, 0px);
             --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
         }
 
-        /* Применяем отступы к верхнему и нижнему барам */
+        /* Applying padding to top and bottom bars */
         .safe-padding-top {
             padding-top: var(--safe-area-inset-top);
         }
         
         .safe-padding-bottom {
-            /* Добавляем небольшой отступ (p-3) + отступ для safe-area */
+            /* Add base padding (p-3) + the safe area padding */
             padding-bottom: calc(var(--safe-area-inset-bottom) + 0.75rem); 
         }
         
-        /* Для кнопок навигации, чтобы они не были слишком близко к низу 
-           (p-3 уже есть, safe-padding-bottom добавит еще) 
-        */
+        /* Add base padding to nav buttons */
         .nav-button-padding {
              padding-top: 0.75rem; /* p-3 */
         }
@@ -251,7 +249,7 @@
 
     <!-- Top Bar (Status bar + App Header) -->
     <!-- 
-      safe-padding-top: Добавляет отступ сверху, равный safe-area-inset-top 
+      safe-padding-top: Adds padding to the top equal to the safe-area-inset-top
     -->
     <div class="w-full bg-white text-gray-800 text-sm flex items-center justify-between p-2 pl-4 pr-4 relative z-10 shadow-sm flex-shrink-0 safe-padding-top">
         <div class="flex items-center space-x-2">
@@ -275,8 +273,8 @@
 
     <!-- Content Area (Swappable Pages) -->
     <!-- 
-      flex-1: Занимает все оставшееся место
-      overflow-y-auto: Позволяет контенту прокручиваться, если он не помещается
+      flex-1: Takes up all remaining space
+      overflow-y-auto: Allows content to scroll if it's too long
     -->
     <div class="flex-1 overflow-y-auto">
         
@@ -418,7 +416,7 @@
 
         <!-- PAGE 2: TOOLS MENU (Hidden by default) -->
         <!-- 
-          h-full: Заставляет его занимать всю высоту родительского контейнера (flex-1)
+          h-full: Makes it take the full height of the parent (flex-1)
         -->
         <div id="toolsPage" class="hidden flex flex-col items-center justify-center p-4 h-full">
             <div class="w-full max-w-sm space-y-6">
@@ -452,7 +450,7 @@
         <div id="shakePage" class="hidden flex flex-col items-center justify-center p-4 h-full">
 
             <!-- Shake Battery Block -->
-            <div class="flex flex-col items-center text-center">
+            <div id="shakeContainer" class="flex flex-col items-center text-center hidden">
                 
                 <!-- Shake Battery Icon -->
                 <div class="shake-battery-icon mb-4">
@@ -465,8 +463,14 @@
                 </div>
                 
                 <p class="text-lg font-semibold text-gray-700 mt-4">Shake your phone to charge it</p>
-                <p id="shakeStatus" class="text-sm text-gray-500 h-4 mt-2"></p>
+                <p id="shakeStatus" class="text-sm text-gray-500 h-4 mt-2">Shake your phone!</p>
             </div>
+            
+            <!-- Activate Button (NEW) -->
+            <button id="activateShakeButton" class="bg-blue-500 text-white font-bold py-3 px-8 rounded-full shadow-lg text-xl transition-colors duration-300">
+                Activate Motion Sensors
+            </button>
+            <p id="shakePermissionStatus" class="text-sm text-gray-500 h-4 mt-4 text-center"></p>
 
         </div> <!-- End #shakePage -->
 
@@ -497,7 +501,7 @@
 
     <!-- Bottom Navigation Bar -->
     <!-- 
-      safe-padding-bottom: Добавляет отступ снизу, равный safe-area-inset-bottom 
+      safe-padding-bottom: Adds padding to the bottom equal to the safe-area-inset-bottom 
     -->
     <div class="w-full bg-white text-gray-600 flex justify-around items-center border-t border-gray-200 shadow-lg relative z-10 flex-shrink-0 safe-padding-bottom">
         
@@ -543,6 +547,9 @@
     const statusBarBatteryFill = document.getElementById('statusBarBatteryFill');
 
     // --- Shake Page Elements ---
+    const shakeContainer = document.getElementById('shakeContainer');
+    const activateShakeButton = document.getElementById('activateShakeButton');
+    const shakePermissionStatus = document.getElementById('shakePermissionStatus');
     const shakeBatteryFill = document.getElementById('shakeBatteryFill');
     const shakeBatteryPercent = document.getElementById('shakeBatteryPercent');
     const shakeStatus = document.getElementById('shakeStatus');
@@ -588,7 +595,7 @@
 
         // Stop sensors/animations
         stopShakeListener();
-        // (Fast charging continues in background, so we don't stop it here)
+        // (Fast charging continues, so we don't stop it here)
         
         // Reset status bar to main shakeLevel unless on fast charging page
         if (pageId !== 'fastChargePage') {
@@ -611,7 +618,7 @@
             shakePage.classList.remove('hidden');
             navToolsIcon.classList.add('text-blue-500'); // Keep "Tools" active
             navToolsText.classList.add('text-blue-500');
-            startShakeListener(); // Start sensor
+            checkShakePermission(); // Check permission when page loads
         } else if (pageId === 'fastCharge') {
             fastChargePage.classList.remove('hidden');
             navToolsIcon.classList.add('text-blue-500'); // Keep "Tools" active
@@ -642,36 +649,52 @@
 
     // --- Shake to Charge Logic ---
     
-    async function startShakeListener() {
+    // NEW: Check permission state when page opens
+    function checkShakePermission() {
         if (!('DeviceMotionEvent' in window)) {
-            shakeStatus.textContent = 'Motion sensors not supported.';
+            activateShakeButton.classList.add('hidden');
+            shakePermissionStatus.textContent = 'Motion sensors not supported.';
             return;
         }
-
+        
         if (motionPermissionGranted) {
-            window.addEventListener('devicemotion', handleMotion);
-            shakeStatus.textContent = 'Shake your phone!';
-            return;
+            // Permission already granted
+            activateShakeButton.classList.add('hidden');
+            shakeContainer.classList.remove('hidden');
+            startShakeListener();
+        } else {
+            // Permission not yet granted
+            activateShakeButton.classList.remove('hidden');
+            shakeContainer.classList.add('hidden');
+            shakePermissionStatus.textContent = 'Requires motion sensor permission.';
         }
+    }
 
+    // NEW: Request permission ON CLICK
+    async function requestShakePermission() {
         if (typeof DeviceMotionEvent.requestPermission === 'function') {
             try {
-                shakeStatus.textContent = 'Requesting sensor access...';
+                shakePermissionStatus.textContent = 'Requesting...';
                 const permissionState = await DeviceMotionEvent.requestPermission();
                 
                 if (permissionState === 'granted') {
-                    motionPermissionGranted = true;
-                    window.addEventListener('devicemotion', handleMotion);
-                    shakeStatus.textContent = 'Shake your phone!';
+                    motionPermissionGranted = true; // Save permission
+                    checkShakePermission(); // Re-check to show battery
                 } else {
-                    shakeStatus.textContent = 'Sensor access denied.';
+                    shakePermissionStatus.textContent = 'Sensor access denied.';
                 }
             } catch (error) {
-                shakeStatus.textContent = 'Sensor error. (Requires HTTPS)';
+                shakePermissionStatus.textContent = 'Sensor error. (Requires HTTPS)';
             }
         } else {
-            // Android, etc.
+            // For Android, etc., where permission is not needed or granted by default
             motionPermissionGranted = true;
+            checkShakePermission();
+        }
+    }
+
+    function startShakeListener() {
+        if (motionPermissionGranted) {
             window.addEventListener('devicemotion', handleMotion);
             shakeStatus.textContent = 'Shake your phone!';
         }
@@ -679,7 +702,6 @@
 
     function stopShakeListener() {
         window.removeEventListener('devicemotion', handleMotion);
-        shakeStatus.textContent = '';
         if (shakeTimeout) clearTimeout(shakeTimeout);
         shakeLightning.classList.add('hidden');
     }
@@ -707,8 +729,6 @@
                     shakeStatus.textContent = 'Charging!';
 
                     if (shakeLevel < 100) {
-                        // Increase by ~1 every 100ms for 10 sec = 100%
-                        // 90% in 10 sec = 9% per sec = 0.9% per 100ms. Let's use 1.
                         shakeLevel = Math.min(100, shakeLevel + 1);
                         updateShakeBattery();
                     } else {
@@ -828,6 +848,7 @@
     shakeChargeButton.addEventListener('click', () => navigateTo('shake'));
     fastChargeButton.addEventListener('click', () => navigateTo('fastCharge'));
     fastChargeToggleButton.addEventListener('click', toggleFastCharge);
+    activateShakeButton.addEventListener('click', requestShakePermission); // NEW
 
     // --- Initial Setup ---
     navigateTo('home'); // Start on the home page
