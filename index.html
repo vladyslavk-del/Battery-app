@@ -2,7 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+    <!-- 
+      viewport-fit=cover: Говорит телефону использовать весь экран, включая "челку" и область под панелью "Домой".
+      Это необходимо для работы отступов "safe-area".
+    -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, viewport-fit=cover">
     
     <!-- --- Web App Meta Tags --- -->
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -26,6 +30,25 @@
             -ms-user-select: none; 
             user-select: none; 
         }
+        
+        /* CSS-переменные для "безопасных зон" (Safe Area)
+          env(safe-area-inset-top) -> отступ для "челки" (notch)
+          env(safe-area-inset-bottom) -> отступ для панели "Домой" (home indicator)
+        */
+        :root {
+            --safe-area-inset-top: env(safe-area-inset-top, 0px);
+            --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
+        }
+
+        /* Применяем отступы к верхнему и нижнему барам */
+        .safe-padding-top {
+            padding-top: var(--safe-area-inset-top);
+        }
+        
+        .safe-padding-bottom {
+            padding-bottom: var(--safe-area-inset-bottom);
+        }
+
 
         /* --- Styles for Home Page Battery --- */
         .app-battery-icon {
@@ -219,7 +242,10 @@
 <body class="flex flex-col h-screen bg-[#E0F2FE] text-[#1F2D3D]">
 
     <!-- Top Bar (Status bar + App Header) -->
-    <div class="w-full bg-white text-gray-800 text-sm flex items-center justify-between p-2 relative z-10 shadow-sm flex-shrink-0">
+    <!-- 
+      safe-padding-top: Добавляет отступ сверху, равный safe-area-inset-top 
+    -->
+    <div class="w-full bg-white text-gray-800 text-sm flex items-center justify-between p-2 relative z-10 shadow-sm flex-shrink-0 safe-padding-top">
         <div class="flex items-center space-x-2">
             <span class="font-bold text-xs">14:37</span>
             <span class="w-2 h-2 rounded-full bg-green-500"></span>
@@ -240,7 +266,11 @@
 
 
     <!-- Content Area (Swappable Pages) -->
-    <div classs="flex-1 overflow-y-auto">
+    <!-- 
+      flex-1: Занимает все оставшееся место
+      overflow-y-auto: Позволяет контенту прокручиваться, если он не помещается
+    -->
+    <div class="flex-1 overflow-y-auto">
         
         <!-- PAGE 1: HOME (Visible by default) -->
         <div id="homePage" class="flex flex-col items-center justify-start p-4">
@@ -379,6 +409,9 @@
         </div> <!-- End #homePage -->
 
         <!-- PAGE 2: TOOLS MENU (Hidden by default) -->
+        <!-- 
+          h-full: Заставляет его занимать всю высоту родительского контейнера (flex-1)
+        -->
         <div id="toolsPage" class="hidden flex flex-col items-center justify-center p-4 h-full">
             <div class="w-full max-w-sm space-y-6">
                 
@@ -455,7 +488,10 @@
 
 
     <!-- Bottom Navigation Bar -->
-    <div class="w-full bg-white text-gray-600 flex justify-around items-center p-3 border-t border-gray-200 shadow-lg relative z-10 flex-shrink-0">
+    <!-- 
+      safe-padding-bottom: Добавляет отступ снизу, равный safe-area-inset-bottom 
+    -->
+    <div class="w-full bg-white text-gray-600 flex justify-around items-center p-3 border-t border-gray-200 shadow-lg relative z-10 flex-shrink-0 safe-padding-bottom">
         
         <!-- Home Button -->
         <div id="navHomeButton" class="flex flex-col items-center cursor-pointer">
@@ -544,14 +580,13 @@
 
         // Stop sensors/animations
         stopShakeListener();
-        if (isFastCharging) {
-             // Don't stop, let it run in background, just update status bar
-        }
+        // (Fast charging continues in background, so we don't stop it here)
         
         // Reset status bar to main shakeLevel unless on fast charging page
         if (pageId !== 'fastChargePage') {
             updateStatusBarBattery(shakeLevel);
         } else {
+            // On fast charge page, make sure status bar shows fast charge level
             updateStatusBarBattery(fastChargePercentValue);
         }
 
